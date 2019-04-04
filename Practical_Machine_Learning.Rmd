@@ -55,6 +55,8 @@ pml_training<-pml_data[inTrain,]
 pml_testing<-pml_data[-inTrain,]
 ```
 
+###Data Cleaning
+
 From the Data we can see that there is are a lot of NAs i.e missing data in the dataset. We would need to clean it as it will skew the predictions made by our model if we include those predictor variables.
 
 Before we remove the missing data, we also need to remove the Near Zero Variance Variables as there are many such variables with only one value or more than 90% of one value.
@@ -89,31 +91,32 @@ As we can see, the variables are very low to moderately correlated and hence we 
 
 For this analysis, I would be using three ML algorithms, Basic Tree model, Random Forest and Gradient Boosting Model. 
 
-#CART MODEL
+###CART MODEL
 
 ```{r}
 tree_model<-train(classe~.,data=pml_training,method="rpart")
 fancyRpartPlot(tree_model$finalModel)
 ```
 
-#Random Forest
+###Random Forest
 
 We will use K-fold cross validation method to build this model with 3 samples.
 
 ```{r}
 rfcontrol<-trainControl(method="cv",allowParallel = TRUE,number = 3)
 RF_model<-train(classe~.,data=pml_training,method="rf",trControl=rfcontrol)
+print(RF_model)
 plot(RF_model$finalModel)
 ```
 
-#Gradient Boosting Method
+###Gradient Boosting Method
 
 We will use K-fold cross validation method to build this model with 5 samples.
 
 ```{r}
 gbControl<-trainControl(method = "cv",allowParallel = TRUE, number = 5)
 GBM_model<-train(classe~.,data=pml_training,method="gbm",trControl=gbControl,verbose=FALSE)
-plot(GBM_model$finalModel)
+print(GBM_model)
 ```
 
 
@@ -139,7 +142,6 @@ Hence, Random Forest model would be the obvious choice amongst the three models.
 
 ```{r}
 prediction<-predict(RF_model,pml_predict_data)
-kable(prediction)
-
+prediction
 ```
 
